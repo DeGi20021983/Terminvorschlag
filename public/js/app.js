@@ -36,4 +36,48 @@
             }
         });
     });
+    // Teilnehmerliste: Tabelle alle 15 Sekunden neu laden, nur wenn die Seite sichtbar ist.
+    var live = document.querySelector('[data-live-url]');
+
+    if (live) {
+        var stand = document.querySelector('[data-live-status]');
+        var url = live.getAttribute('data-live-url');
+
+        var refresh = function () {
+            if (document.hidden) {
+                return;
+            }
+
+            fetch(url, { credentials: 'same-origin', headers: { Accept: 'text/html' } })
+                .then(function (response) {
+                    if (!response.ok) {
+                        throw new Error('HTTP ' + response.status);
+                    }
+
+                    var time = response.headers.get('X-Stand');
+
+                    return response.text().then(function (html) {
+                        live.innerHTML = html;
+
+                        if (stand && time) {
+                            stand.textContent = 'Stand: ' + time + ' Uhr · aktualisiert sich automatisch';
+                        }
+                    });
+                })
+                .catch(function () {
+                    if (stand) {
+                        stand.textContent = 'Die Aktualisierung ist fehlgeschlagen. Bitte laden Sie die Seite neu.';
+                    }
+                });
+        };
+
+        window.setInterval(refresh, 15000);
+    }
+
+    // Drucken über den Button auf der Anwesenheitsliste (ohne Inline-Skript, wegen CSP).
+    document.querySelectorAll('[data-print]').forEach(function (button) {
+        button.addEventListener('click', function () {
+            window.print();
+        });
+    });
 })();

@@ -8,6 +8,7 @@ use App\Models\Booking;
 use App\Models\Offer;
 use App\Models\Slot;
 use App\Services\BookingService;
+use App\Services\ParticipantService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
@@ -15,6 +16,7 @@ class BookingController extends Controller
 {
     public function __construct(
         private readonly BookingService $bookings,
+        private readonly ParticipantService $participants,
     ) {}
 
     /**
@@ -61,7 +63,7 @@ class BookingController extends Controller
         $this->authorize('manage', $booking->offer);
 
         return $this->attempt(
-            fn () => $this->bookings->cancelByOrganizer($booking),
+            fn () => $this->participants->removePerson($request->user(), $booking),
             'Die Person wurde ausgetragen.',
         );
     }

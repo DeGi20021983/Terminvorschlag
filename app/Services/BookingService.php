@@ -58,6 +58,27 @@ final class BookingService
     }
 
     /**
+     * Trägt eine Person auf Veranlassung des Organisators ein. Die Buchungszeitspanne gilt nicht,
+     * Terminbeginn und Belegung dagegen schon.
+     */
+    public function bookManually(User $organizer, Slot $slot, User $person): Booking
+    {
+        $booking = DB::transaction(function () use ($organizer, $slot, $person) {
+            $offer = $this->lockOffer($slot->offer_id);
+            $slot = $this->lockSlot($slot->id);
+
+            $this->assertSlotFree($slot, BookingSource::Manual);
+            $this->assertOnePerPerson($offer, $person);
+
+            return $this->createBooking($offer, $slot, $person, BookingSource::Manual, $organizer);
+        }, self::TRANSACTION_ATTEMPTS);
+
+        event(new BookingConfirmed($booking));
+
+        return $booking;
+    }
+
+    /**
      * Storniert eine eigene Buchung bis zum Terminbeginn. Der Platz ist sofort wieder frei.
      */
     public function cancel(User $user, Booking $booking): Booking

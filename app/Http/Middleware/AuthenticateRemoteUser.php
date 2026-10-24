@@ -5,7 +5,7 @@ namespace App\Http\Middleware;
 use App\Directory\DirectoryPerson;
 use App\Directory\DirectoryService;
 use App\Directory\DirectoryUnavailableException;
-use App\Models\User;
+use App\Services\UserProvisioner;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -40,7 +40,7 @@ final class AuthenticateRemoteUser
 
         $person = $this->lookupPerson($username);
 
-        $user = $this->syncUser($person);
+        $user = app(UserProvisioner::class)->sync($person);
 
         Auth::setUser($user);
 
@@ -85,20 +85,5 @@ final class AuthenticateRemoteUser
         }
 
         return $person;
-    }
-
-    private function syncUser(DirectoryPerson $person): User
-    {
-        return User::updateOrCreate(
-            ['username' => $person->username],
-            [
-                'display_name' => $person->displayName,
-                'department' => $person->department,
-                'email' => $person->email,
-                'is_organizer' => $person->isOrganizer,
-                'is_admin' => $person->isAdmin,
-                'last_seen_at' => now(),
-            ],
-        );
     }
 }

@@ -5,6 +5,7 @@ namespace Tests\Feature\Offers;
 use App\Enums\BookingStatus;
 use App\Enums\OfferStatus;
 use App\Events\OfferCancelled;
+use App\Models\AppSetting;
 use App\Models\AuditLog;
 use App\Models\Booking;
 use App\Models\Offer;
@@ -72,11 +73,20 @@ class OfferManagementTest extends TestCase
         $this->assertDatabaseCount('offers', 0);
     }
 
-    public function test_wish_offer_requires_a_deadline(): void
+    public function test_wish_offer_without_deadline_uses_the_standard_deadline(): void
     {
+        AppSetting::put('wish_deadline_days_before', '4');
+
         $this->signInAs($this->organizer)
-            ->post(route('manage.offers.store'), $this->offerData(['allocation_mode' => 'wishes', 'wish_deadline' => '']))
-            ->assertSessionHasErrors(['wish_deadline']);
+            ->post(route('manage.offers.store'), $this->offerData([
+                'allocation_mode' => 'wishes',
+                'bookable_from' => '2026-11-10T09:00',
+                'bookable_until' => '2026-12-31T17:00',
+                'wish_deadline' => '',
+            ]))
+            ->assertSessionHasNoErrors();
+
+        $this->assertSame('2026-11-06 09:00:00', Offer::query()->sole()->wish_deadline->format('Y-m-d H:i:s'));
     }
 
     public function test_publishing_requires_at_least_one_slot(): void

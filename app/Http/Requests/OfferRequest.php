@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Enums\AllocationMode;
+use App\Models\AppSetting;
 use Carbon\CarbonImmutable;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -32,10 +33,7 @@ class OfferRequest extends FormRequest
             'allocation_mode' => ['required', Rule::enum(AllocationMode::class)],
             'bookable_from' => ['required', 'date'],
             'bookable_until' => ['required', 'date', 'after_or_equal:bookable_from'],
-            'wish_deadline' => [
-                'nullable', 'date', 'before:bookable_until',
-                Rule::requiredIf(fn () => $this->input('allocation_mode') === AllocationMode::Wishes->value),
-            ],
+            'wish_deadline' => ['nullable', 'date', 'before:bookable_until'],
             'one_booking_per_person' => ['sometimes', 'boolean'],
             'reminders_enabled' => ['sometimes', 'boolean'],
         ];
@@ -53,6 +51,26 @@ class OfferRequest extends FormRequest
                 }
             },
         ];
+    }
+
+    /**
+     * Bei Wunschterminen ohne Angabe gilt die Standardfrist aus der Administration.
+     *
+     * @param  array<string, mixed>  $validated
+     */
+    private function wishDeadline(array $validated): ?CarbonImmutable
+    {
+        if (($validated['allocation_mode'] ?? null) !== AllocationMode::Wishes->value) {
+            return null;
+        }
+
+        if (! empty($validated['wish_deadline'])) {
+            return CarbonImmutable::parse($validated['wish_deadline']);
+        }
+
+        $days = (int) AppSetting::get('wish_deadline_days_before', (string) config('terminvorschlag.defaults.wish_deadline_days_before'));
+
+        return CarbonImmutable::parse($validated['bookable_from'])->subDays($days);
     }
 
     /**
@@ -75,7 +93,7 @@ class OfferRequest extends FormRequest
             'allocation_mode' => $validated['allocation_mode'],
             'bookable_from' => CarbonImmutable::parse($validated['bookable_from']),
             'bookable_until' => CarbonImmutable::parse($validated['bookable_until']),
-            'wish_deadline' => isset($validated['wish_deadline']) ? CarbonImmutable::parse($validated['wish_deadline']) : null,
+            'wish_deadline' => $this->wishDeadline($validated),
             'one_booking_per_person' => $this->boolean('one_booking_per_person', true),
             'reminders_enabled' => $this->boolean('reminders_enabled', true),
         ];

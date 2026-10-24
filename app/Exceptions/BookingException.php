@@ -129,6 +129,16 @@ final class BookingException extends RuntimeException
         return new self('Dieser Vorschlag gehört nicht zu Ihrem Konto.');
     }
 
+    public static function personNotFound(): self
+    {
+        return new self('Diese Kennung ist im Verzeichnis nicht gefunden. Bitte prüfen Sie den Benutzernamen.');
+    }
+
+    public static function messageNeedsRecipients(): self
+    {
+        return new self('An diesem Angebot sind noch keine Personen gebucht.');
+    }
+
     public static function offerAlreadyCancelled(): self
     {
         return new self('Dieses Angebot ist bereits abgesagt.');

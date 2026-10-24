@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\LocationController;
+use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\Manage\OfferPageController;
 use App\Http\Controllers\Manage\ParticipantController;
@@ -45,6 +47,12 @@ Route::prefix('verwalten')->name('manage.')->group(function () {
     Route::delete('termine/{slot}', [SlotController::class, 'destroy'])->name('slots.destroy');
 
     Route::get('teilnehmer', [ParticipantController::class, 'index'])->name('participants.index');
+    Route::get('teilnehmer/{offer}/tabelle', [ParticipantController::class, 'live'])->name('participants.live');
+    Route::get('teilnehmer/{offer}/export.csv', [ParticipantController::class, 'csv'])->name('participants.csv');
+    Route::get('teilnehmer/{offer}/export.xlsx', [ParticipantController::class, 'xlsx'])->name('participants.xlsx');
+    Route::get('teilnehmer/{offer}/anwesenheit', [ParticipantController::class, 'print'])->name('participants.print');
+    Route::post('teilnehmer/{offer}/eintragen', [ParticipantController::class, 'add'])->name('participants.add');
+    Route::post('teilnehmer/{offer}/nachricht', [ParticipantController::class, 'message'])->name('participants.message');
     Route::get('wuensche', [WishController::class, 'index'])->name('wishes.index');
     Route::post('wuensche/{offer}/berechnen', [WishController::class, 'calculate'])->name('wishes.calculate');
     Route::post('wuensche/{offer}/freigeben', [WishController::class, 'release'])->name('wishes.release');
@@ -53,4 +61,9 @@ Route::prefix('verwalten')->name('manage.')->group(function () {
     Route::delete('buchungen/{booking}', [BookingController::class, 'remove'])->name('bookings.remove');
 });
 
-Route::get('/verwaltung', [AdminController::class, 'index'])->name('admin.index');
+Route::prefix('verwaltung')->name('admin.')->group(function () {
+    Route::get('/', [AdminController::class, 'index'])->name('index');
+    Route::put('einstellungen', [SettingsController::class, 'update'])->name('settings');
+    Route::post('standorte', [LocationController::class, 'store'])->name('locations.store');
+    Route::put('standorte/{location}', [LocationController::class, 'update'])->name('locations.update');
+});

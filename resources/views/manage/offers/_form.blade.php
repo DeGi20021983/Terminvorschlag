@@ -90,7 +90,7 @@
         <label for="wish_deadline">Frist für Wunschtermine</label>
         <input id="wish_deadline" name="wish_deadline" type="datetime-local"
                value="{{ old('wish_deadline', $dt($offer?->wish_deadline)) }}">
-        <p class="field__help">Nur bei Wunschtermin-Vergabe erforderlich.</p>
+        <p class="field__help">Nur bei Wunschtermin-Vergabe. Leer lassen: Standardfrist aus der Administration.</p>
     </div>
 
     <fieldset class="fieldset">

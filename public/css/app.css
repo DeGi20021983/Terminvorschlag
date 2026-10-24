@@ -978,6 +978,54 @@ details.disclosure form .field {
     }
 }
 
+/* Druck: nur die Anwesenheitsliste, ohne Navigation und Schaltflächen */
+
+.print-sheet h1 {
+    font-size: 24px;
+}
+
+.print-table th,
+.print-table td {
+    border: 1px solid #8A939E;
+}
+
+.print-box {
+    width: 64px;
+}
+
+.print-sign {
+    width: 220px;
+}
+
+@media print {
+    .site-header,
+    .site-footer,
+    .no-print,
+    .skip-link {
+        display: none !important;
+    }
+
+    body {
+        background: #FFFFFF;
+        color: #000000;
+    }
+
+    .page,
+    .error-page {
+        max-width: none;
+        padding: 0;
+    }
+
+    .table-wrap {
+        border: none;
+        overflow: visible;
+    }
+
+    .table tbody tr {
+        break-inside: avoid;
+    }
+}
+
 @media (prefers-reduced-motion: reduce) {
     * {
         transition: none !important;
