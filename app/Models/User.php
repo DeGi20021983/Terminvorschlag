@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 /**
@@ -40,6 +41,31 @@ class User extends Authenticatable
             'is_admin' => 'boolean',
             'last_seen_at' => 'datetime',
         ];
+    }
+
+    public function bookings(): HasMany
+    {
+        return $this->hasMany(Booking::class);
+    }
+
+    public function offers(): HasMany
+    {
+        return $this->hasMany(Offer::class, 'owner_user_id');
+    }
+
+    public function wishEntries(): HasMany
+    {
+        return $this->hasMany(WishEntry::class);
+    }
+
+    public function wishAssignments(): HasMany
+    {
+        return $this->hasMany(WishAssignment::class);
+    }
+
+    public function auditLogs(): HasMany
+    {
+        return $this->hasMany(AuditLog::class, 'actor_user_id');
     }
 
     /**

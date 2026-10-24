@@ -24,11 +24,11 @@ class DatabaseSeeder extends Seeder
         Location::query()->create(['name' => 'Schulungsraum Süd', 'address' => 'Am Park 4, 01097 Dresden', 'is_active' => true]);
         Location::query()->create(['name' => 'Alter Standort', 'address' => null, 'is_active' => false]);
 
-        $olaf = User::factory()->organizer()->create(['username' => 'olaf.organizer', 'display_name' => 'Olaf Organisator', 'department' => 'Personalentwicklung']);
-        $petra = User::factory()->organizer()->create(['username' => 'petra.planerin', 'display_name' => 'Petra Planerin', 'department' => 'Personalentwicklung']);
-        $anna = User::factory()->create(['username' => 'anna.schmidt', 'display_name' => 'Anna Schmidt', 'department' => 'Bereich Nord']);
-        $ben = User::factory()->create(['username' => 'ben.becker', 'display_name' => 'Ben Becker', 'department' => 'Bereich Süd']);
-        $clara = User::factory()->create(['username' => 'clara.wolf', 'display_name' => 'Clara Wolf', 'department' => 'Bereich Nord']);
+        $olaf = User::factory()->organizer()->create(['username' => 'olaf.organizer', 'email' => 'olaf.organizer@example.de', 'display_name' => 'Olaf Organisator', 'department' => 'Personalentwicklung']);
+        $petra = User::factory()->organizer()->create(['username' => 'petra.planerin', 'email' => 'petra.planerin@example.de', 'display_name' => 'Petra Planerin', 'department' => 'Personalentwicklung']);
+        $anna = User::factory()->create(['username' => 'anna.schmidt', 'email' => 'anna.schmidt@example.de', 'display_name' => 'Anna Schmidt', 'department' => 'Bereich Nord']);
+        $ben = User::factory()->create(['username' => 'ben.becker', 'email' => 'ben.becker@example.de', 'display_name' => 'Ben Becker', 'department' => 'Bereich Süd']);
+        $clara = User::factory()->create(['username' => 'clara.wolf', 'email' => 'clara.wolf@example.de', 'display_name' => 'Clara Wolf', 'department' => 'Bereich Nord']);
 
         $ergonomie = Offer::factory()->create([
             'owner_user_id' => $olaf->id,
