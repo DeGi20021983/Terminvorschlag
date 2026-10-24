@@ -675,6 +675,17 @@ textarea {
     padding: 9px 11px;
 }
 
+.slot-button--wish {
+    border-style: dashed;
+    border-color: var(--color-hint-text);
+    background: var(--color-surface);
+}
+
+.slot-button--wish .slot-button__state {
+    color: var(--color-hint-text);
+    font-weight: 600;
+}
+
 .slot-button--booked {
     background: var(--color-booked-bg);
     color: var(--color-booked-text);
@@ -907,6 +918,14 @@ details.disclosure form .field {
 
 .section-gap {
     margin-bottom: 32px;
+}
+
+.section-gap--top {
+    margin-top: 32px;
+}
+
+.toolbar--spaced {
+    margin-top: 16px;
 }
 
 /* Fehlerseiten */

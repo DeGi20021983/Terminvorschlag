@@ -8,6 +8,12 @@
         <span class="slot-button__time">{{ $termin->timeRange() }}</span>
         <span class="slot-button__state">@if ($selected?->id === $termin->id) Ausgewählt @else Frei · auswählen @endif</span>
     </a>
+@elseif ($status === 'wish')
+    <div class="slot-button slot-button--wish">
+        <span>{{ $termin->dateLabel() }}</span>
+        <span class="slot-button__time">{{ $termin->timeRange() }}</span>
+        <span class="slot-button__state">Wunschtermin</span>
+    </div>
 @elseif ($status === 'mine')
     <div class="slot-button slot-button--mine">
         <span>{{ $termin->dateLabel() }}</span>

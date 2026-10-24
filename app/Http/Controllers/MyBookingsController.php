@@ -2,9 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\AlternativeResponse;
 use App\Enums\BookingStatus;
 use App\Enums\OfferStatus;
+use App\Enums\WishOutcome;
+use App\Enums\WishRunStatus;
 use App\Models\Booking;
+use App\Models\WishAssignment;
 use App\Models\WishEntry;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
@@ -38,6 +42,22 @@ class MyBookingsController extends Controller
             ->orderBy('priority')
             ->get();
 
-        return view('bookings.mine', compact('upcoming', 'past', 'wishes', 'now'));
+        $proposals = WishAssignment::query()
+            ->where('user_id', $userId)
+            ->where('alternative_response', AlternativeResponse::Pending)
+            ->whereHas('run', fn ($run) => $run->where('status', WishRunStatus::Released))
+            ->with(['offer.location', 'slot'])
+            ->get()
+            ->sortBy(fn (WishAssignment $item) => $item->slot->starts_at)
+            ->values();
+
+        $withoutSlot = WishAssignment::query()
+            ->where('user_id', $userId)
+            ->where('outcome', WishOutcome::None)
+            ->whereHas('run', fn ($run) => $run->where('status', WishRunStatus::Released))
+            ->with('offer')
+            ->get();
+
+        return view('bookings.mine', compact('upcoming', 'past', 'wishes', 'proposals', 'withoutSlot', 'now'));
     }
 }

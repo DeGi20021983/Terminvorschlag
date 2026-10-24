@@ -40,6 +40,50 @@ class WishAssignment extends Model
         return $this->belongsTo(WishRun::class, 'wish_run_id');
     }
 
+    public function offer(): BelongsTo
+    {
+        return $this->belongsTo(Offer::class);
+    }
+
+    /**
+     * Hinweis für Organisator und Person, z. B. „Erstwunsch erfüllt“ oder „Per Los“.
+     */
+    public function hint(): string
+    {
+        if ($this->outcome === WishOutcome::None) {
+            return 'Kein freier Termin';
+        }
+
+        if ($this->outcome === WishOutcome::Alternative) {
+            return match ($this->alternative_response) {
+                AlternativeResponse::Pending => 'Alternative vorgeschlagen',
+                AlternativeResponse::Accepted => 'Alternative angenommen',
+                AlternativeResponse::Declined => 'Alternative abgelehnt',
+                null => 'Alternative zugeteilt',
+            };
+        }
+
+        $label = $this->outcome->label();
+
+        return $this->by_lot ? 'Per Los · '.$label : $label.' erfüllt';
+    }
+
+    /**
+     * Direkte Zuteilung: wird bei der Freigabe gebucht.
+     */
+    public function isDirect(): bool
+    {
+        return $this->outcome !== WishOutcome::None && $this->alternative_response === null;
+    }
+
+    /**
+     * Vorschlag, den die Person annehmen oder ablehnen kann.
+     */
+    public function isPendingAlternative(): bool
+    {
+        return $this->alternative_response === AlternativeResponse::Pending;
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

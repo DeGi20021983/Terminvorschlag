@@ -10,6 +10,7 @@ use App\Http\Controllers\OfferCatalogController;
 use App\Http\Controllers\OfferController;
 use App\Http\Controllers\PrivacyController;
 use App\Http\Controllers\SlotController;
+use App\Http\Controllers\WishSubmissionController;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/angebote')->name('home');
@@ -23,6 +24,10 @@ Route::get('/datenschutz', PrivacyController::class)->name('privacy');
 Route::post('/angebote/{offer}/termine/{slot}/buchen', [BookingController::class, 'store'])->name('bookings.store');
 Route::post('/buchungen/{booking}/stornieren', [BookingController::class, 'cancel'])->name('bookings.cancel');
 Route::post('/buchungen/{booking}/umbuchen', [BookingController::class, 'move'])->name('bookings.move');
+
+Route::post('/angebote/{offer}/wuensche', [WishSubmissionController::class, 'store'])->name('wishes.store');
+Route::post('/vorschlaege/{assignment}/annehmen', [WishSubmissionController::class, 'accept'])->name('wishes.accept');
+Route::post('/vorschlaege/{assignment}/ablehnen', [WishSubmissionController::class, 'decline'])->name('wishes.decline');
 
 // Organisatoren: nur eigene Angebote (Policies in den Controllern)
 Route::prefix('verwalten')->name('manage.')->group(function () {
@@ -41,6 +46,9 @@ Route::prefix('verwalten')->name('manage.')->group(function () {
 
     Route::get('teilnehmer', [ParticipantController::class, 'index'])->name('participants.index');
     Route::get('wuensche', [WishController::class, 'index'])->name('wishes.index');
+    Route::post('wuensche/{offer}/berechnen', [WishController::class, 'calculate'])->name('wishes.calculate');
+    Route::post('wuensche/{offer}/freigeben', [WishController::class, 'release'])->name('wishes.release');
+    Route::put('wuensche/zuteilungen/{assignment}', [WishController::class, 'update'])->name('wishes.assignment');
 
     Route::delete('buchungen/{booking}', [BookingController::class, 'remove'])->name('bookings.remove');
 });

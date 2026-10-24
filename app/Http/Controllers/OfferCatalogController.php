@@ -6,6 +6,7 @@ use App\Enums\AllocationMode;
 use App\Enums\OfferStatus;
 use App\Models\Booking;
 use App\Models\Offer;
+use App\Models\WishEntry;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -85,6 +86,14 @@ class OfferCatalogController extends Controller
             }
         }
 
+        $wishesOpen = $offer->wishesOpen($now);
+
+        $wishSlots = $slots->filter(fn ($termin) => $termin->activeBooking === null && $termin->starts_at->greaterThan($now))->values();
+
+        $myWishes = $wishesOpen
+            ? WishEntry::query()->where('offer_id', $offer->id)->where('user_id', $user->id)->get()->keyBy('priority')
+            : collect();
+
         return view('offers.show', [
             'offer' => $offer,
             'slots' => $slots,
@@ -93,6 +102,9 @@ class OfferCatalogController extends Controller
             'ownBooking' => $ownBooking,
             'selected' => $selected,
             'userId' => $user->id,
+            'wishesOpen' => $wishesOpen,
+            'wishSlots' => $wishSlots,
+            'myWishes' => $myWishes,
         ]);
     }
 

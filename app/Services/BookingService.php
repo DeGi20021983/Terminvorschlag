@@ -2,8 +2,10 @@
 
 namespace App\Services;
 
+use App\Enums\AlternativeResponse;
 use App\Enums\BookingSource;
 use App\Enums\BookingStatus;
+use App\Enums\WishRunStatus;
 use App\Events\BookingCancelled;
 use App\Events\BookingConfirmed;
 use App\Events\BookingMoved;
@@ -12,6 +14,8 @@ use App\Models\Booking;
 use App\Models\Offer;
 use App\Models\Slot;
 use App\Models\User;
+use App\Models\WishAssignment;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 
@@ -42,7 +46,7 @@ final class BookingService
             $slot = $this->lockSlot($slot->id);
 
             $this->assertBookingWindow($offer, $source);
-            $this->assertSlotFree($slot);
+            $this->assertSlotFree($slot, $source);
             $this->assertOnePerPerson($offer, $user);
 
             return $this->createBooking($offer, $slot, $user, $source, $bookedBy);
@@ -128,7 +132,7 @@ final class BookingService
             $this->assertBookingWindow($offer, BookingSource::Moved);
 
             $slot = $this->lockSlot($newSlot->id);
-            $this->assertSlotFree($slot);
+            $this->assertSlotFree($slot, BookingSource::Moved);
 
             $new = $this->createBooking($offer, $slot, $user, BookingSource::Moved, $user, $old->id);
 
@@ -169,7 +173,7 @@ final class BookingService
         }
     }
 
-    private function assertSlotFree(Slot $slot): void
+    private function assertSlotFree(Slot $slot, BookingSource $source): void
     {
         if ($slot->starts_at->lessThanOrEqualTo(now())) {
             throw BookingException::slotStarted();
@@ -178,6 +182,20 @@ final class BookingService
         if (Booking::query()->confirmed()->where('slot_id', $slot->id)->exists()) {
             throw BookingException::slotTaken();
         }
+
+        // Ein offener Vorschlag aus der Wunschverteilung reserviert den Termin gegen Sofortbuchung und Umbuchung.
+        if ($source !== BookingSource::Wish && $this->reservedByWishProposal($slot)) {
+            throw BookingException::slotTaken();
+        }
+    }
+
+    private function reservedByWishProposal(Slot $slot): bool
+    {
+        return WishAssignment::query()
+            ->where('slot_id', $slot->id)
+            ->where('alternative_response', AlternativeResponse::Pending)
+            ->whereHas('run', fn (Builder $run) => $run->where('status', WishRunStatus::Released))
+            ->exists();
     }
 
     private function assertOnePerPerson(Offer $offer, User $user, ?int $exceptBookingId = null): void

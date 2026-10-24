@@ -6,7 +6,7 @@
     @php
         $switching = $ownBooking !== null && $offer->one_booking_per_person;
 
-        $state = function ($termin) use ($now, $userId, $bookable) {
+        $state = function ($termin) use ($now, $userId, $bookable, $wishesOpen) {
             if ($termin->activeBooking !== null && $termin->activeBooking->user_id === $userId) {
                 return 'mine';
             }
@@ -17,6 +17,10 @@
 
             if ($termin->starts_at->lessThanOrEqualTo($now)) {
                 return 'past';
+            }
+
+            if ($wishesOpen) {
+                return 'wish';
             }
 
             return $bookable ? 'free' : 'closed';
@@ -59,6 +63,31 @@
                         @endif
                         Danach verteilt der Organisator die Termine. Freie Termine können anschließend direkt gebucht werden.</p>
                 </div>
+            @endif
+
+            @if ($wishesOpen)
+                <form method="post" action="{{ route('wishes.store', $offer) }}" class="card notice" aria-labelledby="wunsch-titel">
+                    @csrf
+                    <h2 id="wunsch-titel">Ihre Wunschtermine</h2>
+                    <p class="muted">Wählen Sie zwei oder drei Termine in Ihrer Reihenfolge. Die Frist endet am
+                        {{ $offer->wish_deadline->translatedFormat('d.m.Y H:i') }} Uhr. Danach verteilt der Organisator die Termine.</p>
+
+                    @foreach ([1, 2, 3] as $prio)
+                        <div class="field">
+                            <label for="wunsch-{{ $prio }}">Wunsch {{ $prio }} <span class="muted">({{ $prio < 3 ? 'erforderlich' : 'optional' }})</span></label>
+                            <select id="wunsch-{{ $prio }}" name="wishes[{{ $prio }}]">
+                                <option value="">Kein Wunsch</option>
+                                @foreach ($wishSlots as $termin)
+                                    <option value="{{ $termin->id }}" @selected(($myWishes[$prio]->slot_id ?? null) === $termin->id)>
+                                        {{ $termin->dateLabel() }}, {{ $termin->timeRange() }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    @endforeach
+
+                    <button class="btn btn--primary" type="submit">Wünsche speichern</button>
+                </form>
             @endif
 
             <div class="view-toggle" role="group" aria-label="Ansicht wählen">

@@ -79,6 +79,56 @@ final class BookingException extends RuntimeException
         return new self('Legen Sie vor der Veröffentlichung mindestens einen Termin an.');
     }
 
+    public static function wishesClosed(): self
+    {
+        return new self('Die Frist für Wunschtermine ist abgelaufen oder dieses Angebot nimmt keine Wünsche an.');
+    }
+
+    public static function wishCount(int $min): self
+    {
+        return new self("Bitte wählen Sie mindestens {$min} und höchstens 3 verschiedene Wunschtermine.");
+    }
+
+    public static function wishOrder(): self
+    {
+        return new self('Bitte füllen Sie die Wunschtermine der Reihe nach aus (zuerst Wunsch 1).');
+    }
+
+    public static function wishSlotUnavailable(): self
+    {
+        return new self('Einer der gewählten Termine ist nicht mehr verfügbar. Bitte wählen Sie neu.');
+    }
+
+    public static function wishDeadlineNotReached(): self
+    {
+        return new self('Die Verteilung ist erst nach Ablauf der Wunschfrist möglich.');
+    }
+
+    public static function wishesAlreadyReleased(): self
+    {
+        return new self('Die Verteilung ist bereits freigegeben.');
+    }
+
+    public static function notWishOffer(): self
+    {
+        return new self('Dieses Angebot wird nicht über Wunschtermine vergeben.');
+    }
+
+    public static function noWishRun(): self
+    {
+        return new self('Es gibt noch keine berechnete Verteilung. Bitte berechnen Sie die Verteilung zuerst.');
+    }
+
+    public static function alternativeNotPending(): self
+    {
+        return new self('Dieser Vorschlag ist nicht mehr offen.');
+    }
+
+    public static function wishNotYours(): self
+    {
+        return new self('Dieser Vorschlag gehört nicht zu Ihrem Konto.');
+    }
+
     public static function offerAlreadyCancelled(): self
     {
         return new self('Dieses Angebot ist bereits abgesagt.');
