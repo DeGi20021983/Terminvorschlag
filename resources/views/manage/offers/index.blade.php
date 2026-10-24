@@ -14,7 +14,7 @@
         <a class="btn btn--primary" href="{{ route('manage.offers.create') }}">Neues Angebot</a>
     </div>
 
-    <div class="table-wrap">
+    <div tabindex="0" class="table-wrap">
         <table class="table">
             <caption>Ihre Angebote</caption>
             <thead>

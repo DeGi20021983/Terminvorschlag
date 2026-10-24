@@ -35,7 +35,7 @@
             Stand: {{ $updatedAt->format('H:i') }} Uhr · aktualisiert sich automatisch
         </p>
 
-        <div class="table-wrap table-wrap--spaced" data-live-url="{{ route('manage.participants.live', $selected) }}">
+        <div tabindex="0" class="table-wrap table-wrap--spaced" data-live-url="{{ route('manage.participants.live', $selected) }}">
             @include('manage.participants._table', ['offer' => $selected, 'slots' => $slots])
         </div>
 

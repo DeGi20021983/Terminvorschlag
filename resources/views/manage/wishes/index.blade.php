@@ -59,7 +59,7 @@
             <div class="kpi"><div class="kpi__value">{{ $kpis['none'] }}</div><div class="kpi__label">Ohne Termin</div></div>
         </div>
 
-        <div class="table-wrap">
+        <div tabindex="0" class="table-wrap">
             <table class="table">
                 <caption>Wünsche und Vorschläge</caption>
                 <thead>
@@ -121,7 +121,7 @@
         @if ($draws->isNotEmpty())
             <section class="section-gap section-gap--top" aria-labelledby="los-titel">
                 <h2 id="los-titel">Losprotokoll</h2>
-                <div class="table-wrap">
+                <div tabindex="0" class="table-wrap">
                     <table class="table">
                         <caption>Auslosungen bei Gleichstand um einen Termin</caption>
                         <thead>

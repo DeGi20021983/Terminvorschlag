@@ -12,7 +12,7 @@
         <h1>Anwesenheitsliste: {{ $offer->title }}</h1>
         <p class="meta-line">Ansprechperson: {{ $offer->contact_name }} · {{ $offer->locationLabel() }} · gedruckt am {{ $printedAt->translatedFormat('d.m.Y') }} um {{ $printedAt->format('H:i') }} Uhr</p>
 
-        <div class="table-wrap">
+        <div tabindex="0" class="table-wrap">
         <table class="table print-table">
             <caption class="sr-only">Anwesenheit je Termin</caption>
             <thead>

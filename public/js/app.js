@@ -14,6 +14,17 @@
     });
 
     // Umschalter Liste/Kalender auf der Buchungsseite.
+    // Tabellen mit horizontalem Scrollen: per Tastatur erreichbar und mit der Tabellenbeschriftung benannt.
+    document.querySelectorAll('.table-wrap').forEach(function (wrap) {
+        var caption = wrap.querySelector('caption');
+
+        wrap.setAttribute('role', 'region');
+
+        if (caption) {
+            wrap.setAttribute('aria-label', caption.textContent.trim());
+        }
+    });
+
     var toggles = document.querySelectorAll('[data-view-target]');
 
     toggles.forEach(function (toggle) {

@@ -103,7 +103,7 @@
                 </fieldset>
             </form>
 
-            <div class="table-wrap">
+            <div tabindex="0" class="table-wrap">
                 <table class="table">
                     <caption>Alle Termine</caption>
                     <thead>

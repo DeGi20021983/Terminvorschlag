@@ -37,7 +37,7 @@
 
     <section class="section-gap" aria-labelledby="standorte-titel">
         <h2 id="standorte-titel">Standorte</h2>
-        <div class="table-wrap">
+        <div tabindex="0" class="table-wrap">
             <table class="table">
                 <caption>Standorte für Angebote</caption>
                 <thead>
@@ -107,7 +107,7 @@
 
     <section class="section-gap" aria-labelledby="rollen-titel">
         <h2 id="rollen-titel">Rollen und AD-Gruppen</h2>
-        <div class="table-wrap">
+        <div tabindex="0" class="table-wrap">
             <table class="table">
                 <caption>Zuordnung der Rollen zu den Gruppen im Verzeichnis</caption>
                 <thead>
@@ -142,7 +142,7 @@
             Der Lauf startet täglich um 03:10 Uhr.
         </p>
         @if ($purgeRuns->isNotEmpty())
-            <div class="table-wrap">
+            <div tabindex="0" class="table-wrap">
                 <table class="table">
                     <caption>Letzte Löschläufe</caption>
                     <thead>
@@ -199,7 +199,7 @@
             <button class="btn btn--secondary" type="submit">Filtern</button>
         </form>
 
-        <div class="table-wrap">
+        <div tabindex="0" class="table-wrap">
             <table class="table">
                 <caption>Protokolleinträge</caption>
                 <thead>
