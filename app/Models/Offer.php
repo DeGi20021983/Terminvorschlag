@@ -88,6 +88,18 @@ class Offer extends Model
         return $this->hasMany(WishRun::class);
     }
 
+    /**
+     * Ort für die Anzeige: Standort oder „Online“, wenn nur ein Link hinterlegt ist.
+     */
+    public function locationLabel(): string
+    {
+        if ($this->location !== null) {
+            return $this->location->name;
+        }
+
+        return $this->online_url !== null ? 'Online' : '–';
+    }
+
     public function isCancelled(): bool
     {
         return $this->status === OfferStatus::Cancelled;

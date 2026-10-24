@@ -21,8 +21,8 @@ class OfferController extends Controller
 
         $offer = $this->offers->create($request->user(), $request->offerData());
 
-        return back()->with('status', 'Angebot angelegt. Fügen Sie nun die Termine hinzu.')
-            ->with('offerId', $offer->id);
+        return redirect()->route('manage.offers.edit', $offer)
+            ->with('status', 'Angebot angelegt. Fügen Sie nun die Termine hinzu.');
     }
 
     public function update(OfferRequest $request, Offer $offer): RedirectResponse
@@ -31,7 +31,7 @@ class OfferController extends Controller
 
         $this->offers->update($request->user(), $offer, $request->offerData());
 
-        return back()->with('status', 'Angebot gespeichert.');
+        return redirect()->route('manage.offers.edit', $offer)->with('status', 'Angebot gespeichert.');
     }
 
     public function publish(Request $request, Offer $offer): RedirectResponse
@@ -41,10 +41,10 @@ class OfferController extends Controller
         try {
             $this->offers->publish($request->user(), $offer);
         } catch (BookingException $exception) {
-            return back()->withErrors(['offer' => $exception->getMessage()]);
+            return redirect()->route('manage.offers.edit', $offer)->withErrors(['offer' => $exception->getMessage()]);
         }
 
-        return back()->with('status', 'Angebot veröffentlicht.');
+        return redirect()->route('manage.offers.edit', $offer)->with('status', 'Angebot veröffentlicht.');
     }
 
     public function cancel(Request $request, Offer $offer): RedirectResponse
@@ -56,9 +56,10 @@ class OfferController extends Controller
         try {
             $this->offers->cancel($request->user(), $offer, $request->input('note'));
         } catch (BookingException $exception) {
-            return back()->withErrors(['offer' => $exception->getMessage()]);
+            return redirect()->route('manage.offers.edit', $offer)->withErrors(['offer' => $exception->getMessage()]);
         }
 
-        return back()->with('status', 'Angebot abgesagt. Die gebuchten Personen werden benachrichtigt.');
+        return redirect()->route('manage.offers.edit', $offer)
+            ->with('status', 'Angebot abgesagt. Die gebuchten Personen werden benachrichtigt.');
     }
 }

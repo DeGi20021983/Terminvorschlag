@@ -34,7 +34,7 @@ class TransportAndNetworkTest extends TestCase
         ]);
 
         $this->withServerVariables(['REMOTE_USER' => 'CORP\\anna.schmidt'])
-            ->get('/')
+            ->get('/angebote')
             ->assertForbidden();
     }
 
@@ -46,7 +46,7 @@ class TransportAndNetworkTest extends TestCase
         ]);
 
         $this->withServerVariables(['REMOTE_USER' => 'CORP\\anna.schmidt'])
-            ->get('/')
+            ->get('/angebote')
             ->assertOk();
     }
 
@@ -54,7 +54,7 @@ class TransportAndNetworkTest extends TestCase
     {
         config(['terminvorschlag.force_https' => false]);
 
-        $response = $this->withServerVariables(['REMOTE_USER' => 'CORP\\anna.schmidt'])->get('/');
+        $response = $this->withServerVariables(['REMOTE_USER' => 'CORP\\anna.schmidt'])->get('/angebote');
 
         $response->assertOk();
         $response->assertHeader('X-Frame-Options', 'DENY');

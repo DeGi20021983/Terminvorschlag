@@ -3,6 +3,11 @@
 return [
 
     /*
+    | „ldap“ im Betrieb. „static“ nur lokal: Konten kommen aus „static“ unten.
+    */
+    'driver' => env('DIRECTORY_DRIVER', 'ldap'),
+
+    /*
     |--------------------------------------------------------------------------
     | Active Directory (LDAP/LDAPS)
     |--------------------------------------------------------------------------
@@ -26,6 +31,18 @@ return [
     'groups' => [
         'organizer' => env('LDAP_GROUP_ORGANIZER', ''),
         'admin' => env('LDAP_GROUP_ADMIN', ''),
+    ],
+
+    /*
+    | Demo-Konten für lokale Entwicklung (DIRECTORY_DRIVER=static). Keine echten Personen.
+    */
+    'static' => [
+        'anna.schmidt' => ['name' => 'Anna Schmidt', 'department' => 'Bereich Nord', 'email' => 'anna.schmidt@example.de'],
+        'ben.becker' => ['name' => 'Ben Becker', 'department' => 'Bereich Süd', 'email' => 'ben.becker@example.de'],
+        'clara.wolf' => ['name' => 'Clara Wolf', 'department' => 'Bereich Nord', 'email' => 'clara.wolf@example.de'],
+        'olaf.organizer' => ['name' => 'Olaf Organisator', 'department' => 'Personalentwicklung', 'email' => 'olaf.organizer@example.de', 'organizer' => true],
+        'petra.planerin' => ['name' => 'Petra Planerin', 'department' => 'Personalentwicklung', 'email' => 'petra.planerin@example.de', 'organizer' => true],
+        'ada.admin' => ['name' => 'Ada Admin', 'department' => 'IT', 'email' => 'ada.admin@example.de', 'admin' => true],
     ],
 
     /*

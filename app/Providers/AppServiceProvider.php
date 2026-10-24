@@ -5,7 +5,10 @@ namespace App\Providers;
 use App\Directory\CachedDirectoryService;
 use App\Directory\DirectoryService;
 use App\Directory\LdapDirectoryService;
+use App\Directory\StaticDirectoryService;
 use App\Models\User;
+use Carbon\Carbon;
+use Carbon\CarbonImmutable;
 use Illuminate\Contracts\Cache\Repository as CacheRepository;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Gate;
@@ -18,6 +21,14 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(DirectoryService::class, function ($app) {
             $config = config('directory');
 
+            if ($config['driver'] === 'static') {
+                if ($app->isProduction()) {
+                    throw new \RuntimeException('DIRECTORY_DRIVER=static ist in Produktion nicht erlaubt.');
+                }
+
+                return new StaticDirectoryService($config['static']);
+            }
+
             return new CachedDirectoryService(
                 new LdapDirectoryService($config['ldap'], $config['groups']),
                 $app->make(CacheRepository::class),
@@ -28,6 +39,10 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        // Datumsangaben in deutscher Schreibweise (Wochentage, Monatsnamen).
+        Carbon::setLocale(config('app.locale'));
+        CarbonImmutable::setLocale(config('app.locale'));
+
         // Lazy Loading und fehlende Attribute fallen in Entwicklung und Tests sofort auf.
         Model::shouldBeStrict(! $this->app->isProduction());
 

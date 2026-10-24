@@ -95,7 +95,7 @@ class AuthorizationTest extends TestCase
         $draft = Offer::factory()->draft()->create(['owner_user_id' => $owner->id]);
 
         $this->signInAs(User::factory()->create())
-            ->get(route('home'))
+            ->get(route('offers.index'))
             ->assertOk();
 
         $this->assertFalse($this->app->make(Gate::class)

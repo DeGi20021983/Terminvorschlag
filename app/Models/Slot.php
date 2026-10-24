@@ -52,6 +52,22 @@ class Slot extends Model
         return $this->hasOne(Booking::class)->where('status', BookingStatus::Confirmed);
     }
 
+    /**
+     * Datum für die Anzeige, z. B. „Mo, 03.11.2026“.
+     */
+    public function dateLabel(): string
+    {
+        return $this->starts_at->translatedFormat('D, d.m.Y');
+    }
+
+    /**
+     * Uhrzeit für die Anzeige, z. B. „09:00–09:30“.
+     */
+    public function timeRange(): string
+    {
+        return $this->starts_at->format('H:i').'–'.$this->ends_at->format('H:i');
+    }
+
     public function hasEnded(CarbonInterface $now): bool
     {
         return $this->ends_at->lessThanOrEqualTo($now);

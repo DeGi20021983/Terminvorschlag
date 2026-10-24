@@ -41,7 +41,7 @@ class RemoteUserAuthenticationTest extends TestCase
         $this->directory->add('anna.schmidt', 'Anna Schmidt', 'Bereich Nord', 'anna.schmidt@example.de');
 
         $this->withServerVariables(['REMOTE_USER' => 'CORP\\Anna.Schmidt'])
-            ->get('/')
+            ->get('/angebote')
             ->assertOk()
             ->assertSee('Anna Schmidt');
 
@@ -58,7 +58,7 @@ class RemoteUserAuthenticationTest extends TestCase
         $this->directory->add('anna.schmidt');
 
         $this->withServerVariables(['REMOTE_USER' => 'anna.schmidt@corp.example.de'])
-            ->get('/')
+            ->get('/angebote')
             ->assertOk();
 
         $this->assertDatabaseHas('users', ['username' => 'anna.schmidt']);
@@ -68,8 +68,8 @@ class RemoteUserAuthenticationTest extends TestCase
     {
         $this->directory->add('anna.schmidt');
 
-        $this->withServerVariables(['REMOTE_USER' => 'CORP\\ANNA.SCHMIDT'])->get('/')->assertOk();
-        $this->withServerVariables(['REMOTE_USER' => 'anna.schmidt'])->get('/')->assertOk();
+        $this->withServerVariables(['REMOTE_USER' => 'CORP\\ANNA.SCHMIDT'])->get('/angebote')->assertOk();
+        $this->withServerVariables(['REMOTE_USER' => 'anna.schmidt'])->get('/angebote')->assertOk();
 
         $this->assertSame(1, User::query()->count());
     }
@@ -77,7 +77,7 @@ class RemoteUserAuthenticationTest extends TestCase
     public function test_account_missing_in_directory_is_forbidden(): void
     {
         $this->withServerVariables(['REMOTE_USER' => 'CORP\\unbekannt'])
-            ->get('/')
+            ->get('/angebote')
             ->assertForbidden();
 
         $this->assertDatabaseMissing('users', ['username' => 'unbekannt']);
@@ -88,7 +88,7 @@ class RemoteUserAuthenticationTest extends TestCase
         $this->directory->add('anna');
 
         $this->withServerVariables(['REMOTE_USER' => 'CORP\\anna;drop'])
-            ->get('/')
+            ->get('/angebote')
             ->assertForbidden();
     }
 
@@ -97,7 +97,7 @@ class RemoteUserAuthenticationTest extends TestCase
         $this->directory->add('anna.schmidt')->setUnavailable();
 
         $this->withServerVariables(['REMOTE_USER' => 'CORP\\anna.schmidt'])
-            ->get('/')
+            ->get('/angebote')
             ->assertStatus(503);
     }
 
@@ -105,7 +105,7 @@ class RemoteUserAuthenticationTest extends TestCase
     {
         $this->directory->add('olaf.organizer', isOrganizer: true);
 
-        $this->withServerVariables(['REMOTE_USER' => 'CORP\\olaf.organizer'])->get('/')->assertOk();
+        $this->withServerVariables(['REMOTE_USER' => 'CORP\\olaf.organizer'])->get('/angebote')->assertOk();
 
         $user = User::query()->where('username', 'olaf.organizer')->firstOrFail();
 
@@ -117,7 +117,7 @@ class RemoteUserAuthenticationTest extends TestCase
     {
         $this->directory->add('ada.admin', isAdmin: true);
 
-        $this->withServerVariables(['REMOTE_USER' => 'CORP\\ada.admin'])->get('/')->assertOk();
+        $this->withServerVariables(['REMOTE_USER' => 'CORP\\ada.admin'])->get('/angebote')->assertOk();
 
         $user = User::query()->where('username', 'ada.admin')->firstOrFail();
 
@@ -129,7 +129,7 @@ class RemoteUserAuthenticationTest extends TestCase
     {
         $this->directory->add('eva.mitarbeiterin');
 
-        $this->withServerVariables(['REMOTE_USER' => 'CORP\\eva.mitarbeiterin'])->get('/')->assertOk();
+        $this->withServerVariables(['REMOTE_USER' => 'CORP\\eva.mitarbeiterin'])->get('/angebote')->assertOk();
 
         $user = User::query()->where('username', 'eva.mitarbeiterin')->firstOrFail();
 
@@ -140,10 +140,10 @@ class RemoteUserAuthenticationTest extends TestCase
     public function test_removed_group_membership_takes_effect_on_next_sign_in(): void
     {
         $this->directory->add('olaf.organizer', isOrganizer: true);
-        $this->withServerVariables(['REMOTE_USER' => 'CORP\\olaf.organizer'])->get('/')->assertOk();
+        $this->withServerVariables(['REMOTE_USER' => 'CORP\\olaf.organizer'])->get('/angebote')->assertOk();
 
         $this->directory->add('olaf.organizer', isOrganizer: false);
-        $this->withServerVariables(['REMOTE_USER' => 'CORP\\olaf.organizer'])->get('/')->assertOk();
+        $this->withServerVariables(['REMOTE_USER' => 'CORP\\olaf.organizer'])->get('/angebote')->assertOk();
 
         $this->assertFalse(User::query()->where('username', 'olaf.organizer')->firstOrFail()->is_organizer);
     }

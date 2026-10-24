@@ -1,22 +1,34 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\BookingController;
+use App\Http\Controllers\Manage\OfferPageController;
+use App\Http\Controllers\Manage\ParticipantController;
+use App\Http\Controllers\Manage\WishController;
+use App\Http\Controllers\MyBookingsController;
+use App\Http\Controllers\OfferCatalogController;
 use App\Http\Controllers\OfferController;
+use App\Http\Controllers\PrivacyController;
 use App\Http\Controllers\SlotController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function (Request $request) {
-    return view('home', ['user' => $request->user()]);
-})->name('home');
+Route::redirect('/', '/angebote')->name('home');
 
-// Mitarbeitende
+Route::get('/angebote', [OfferCatalogController::class, 'index'])->name('offers.index');
+Route::get('/angebote/{offer}', [OfferCatalogController::class, 'show'])->name('offers.show');
+Route::get('/meine-termine', [MyBookingsController::class, 'index'])->name('bookings.mine');
+Route::get('/datenschutz', PrivacyController::class)->name('privacy');
+
+// Mitarbeitende: buchen, stornieren, umbuchen
 Route::post('/angebote/{offer}/termine/{slot}/buchen', [BookingController::class, 'store'])->name('bookings.store');
 Route::post('/buchungen/{booking}/stornieren', [BookingController::class, 'cancel'])->name('bookings.cancel');
 Route::post('/buchungen/{booking}/umbuchen', [BookingController::class, 'move'])->name('bookings.move');
 
 // Organisatoren: nur eigene Angebote (Policies in den Controllern)
 Route::prefix('verwalten')->name('manage.')->group(function () {
+    Route::get('angebote', [OfferPageController::class, 'index'])->name('offers.index');
+    Route::get('angebote/neu', [OfferPageController::class, 'create'])->name('offers.create');
+    Route::get('angebote/{offer}', [OfferPageController::class, 'edit'])->name('offers.edit');
     Route::post('angebote', [OfferController::class, 'store'])->name('offers.store');
     Route::put('angebote/{offer}', [OfferController::class, 'update'])->name('offers.update');
     Route::post('angebote/{offer}/veroeffentlichen', [OfferController::class, 'publish'])->name('offers.publish');
@@ -27,5 +39,10 @@ Route::prefix('verwalten')->name('manage.')->group(function () {
     Route::post('termine/{slot}/kopieren', [SlotController::class, 'copy'])->name('slots.copy');
     Route::delete('termine/{slot}', [SlotController::class, 'destroy'])->name('slots.destroy');
 
+    Route::get('teilnehmer', [ParticipantController::class, 'index'])->name('participants.index');
+    Route::get('wuensche', [WishController::class, 'index'])->name('wishes.index');
+
     Route::delete('buchungen/{booking}', [BookingController::class, 'remove'])->name('bookings.remove');
 });
+
+Route::get('/verwaltung', [AdminController::class, 'index'])->name('admin.index');
